@@ -1,11 +1,27 @@
 <template>
-
-
-
   <div class="container">
+    <h1>Dados</h1>
+    <hr>
+    <!-- Dropdown para filtrar por período -->
+    <div class="dropdown">
+      <label for="date-filter">Filtrar por período:</label>
+      <select id="date-filter" v-model="selectedPeriod" @change="handlePeriodChange">
+        <option value=""> TODOS </option>
+        <option value="7">Últimos 7 dias</option>
+        <option value="14">Últimos 14 dias</option>
+        <option value="30">Últimos 30 dias</option>
+        <option value="custom">Personalizado</option>
+      </select>
+    </div>
     <search-bar @search="updateSearchTerm" />
 
     <p class="error" v-if="error">{{ error }}</p>
+
+    <!-- Mensagem de aviso se não houver dados nos últimos 7 dias -->
+    <div v-if="selectedPeriod === '7' && filteredAndCustomPosts.length === 0">
+      <p>Nenhum registro encontrado nos últimos 7 dias.</p>
+    </div>
+
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -19,7 +35,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="post in filteredPosts" :key="post._id">
+          <tr v-for="post in filteredAndCustomPosts" :key="post._id">
             <td>{{ formatDate(post.log_data_acesso) }}</td>
             <td>{{ post.log_usuario }}</td>
             <td>{{ post.log_texto_acao }}</td>
@@ -30,6 +46,22 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Modal para selecionar o período personalizado -->
+    <div v-if="showCustomPeriodModal" class="modal">
+      <div class="modal-content">
+        <h2>Selecionar Período Personalizado</h2>
+        <div class="date-inputs">
+          <label for="custom-start-date">Data Inicial:</label>
+          <input type="date" id="custom-start-date" v-model="customStartDate" />
+
+          <label for="custom-end-date">Data Final:</label>
+          <input type="date" id="custom-end-date" v-model="customEndDate" />
+        </div>
+        <button @click="applyCustomPeriod">Aplicar</button>
+        <button @click="closeCustomPeriodModal">Fechar</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -39,15 +71,18 @@ import SearchBar from '@/components/SearchBar.vue';
 
 export default {
   components: {
-    SearchBar,
-    
+    SearchBar
   },
   name: 'PostComponent',
   data() {
     return {
       posts: [],
       error: '',
-      searchTerm: ''
+      searchTerm: '',
+      selectedPeriod: null,
+      showCustomPeriodModal: false,
+      customStartDate: '',
+      customEndDate: ''
     };
   },
   async created() {
@@ -58,17 +93,51 @@ export default {
     }
   },
   computed: {
-    filteredPosts() {
-      if (!this.searchTerm) {
-        return this.posts;
+    filteredAndCustomPosts() {
+      let filteredPosts = this.posts;
+
+      if (this.selectedPeriod === '7') {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+        filteredPosts = filteredPosts.filter(post => {
+          const postDate = new Date(post.log_data_acesso);
+          return postDate >= startDate;
+        });
+      } else if (this.selectedPeriod === '14') {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 14);
+        filteredPosts = filteredPosts.filter(post => {
+          const postDate = new Date(post.log_data_acesso);
+          return postDate >= startDate;
+        });
+      } else if (this.selectedPeriod === '30') {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30);
+        filteredPosts = filteredPosts.filter(post => {
+          const postDate = new Date(post.log_data_acesso);
+          return postDate >= startDate;
+        });
+      } else if (this.selectedPeriod === 'custom') {
+        if (this.customStartDate && this.customEndDate) {
+          const startDate = new Date(this.customStartDate);
+          const endDate = new Date(this.customEndDate);
+          filteredPosts = filteredPosts.filter(post => {
+            const postDate = new Date(post.log_data_acesso);
+            return postDate >= startDate && postDate <= endDate;
+          });
+        }
       }
+
+      if (!this.searchTerm) {
+        return filteredPosts;
+      }
+
       const lowerCaseSearch = this.searchTerm.toLowerCase();
-      return this.posts.filter(post => {
+      return filteredPosts.filter(post => {
         return (
           post.log_usuario.toLowerCase().includes(lowerCaseSearch) ||
           post.log_texto_acao.toLowerCase().includes(lowerCaseSearch) ||
           post.log_ip.toLowerCase().includes(lowerCaseSearch)
-          
         );
       });
     }
@@ -78,6 +147,28 @@ export default {
       const date = new Date(dateString);
       const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
       return formattedDate;
+    },
+    handlePeriodChange() {
+      if (this.selectedPeriod === 'custom') {
+        this.showCustomPeriodModal = true;
+      } else {
+        this.showCustomPeriodModal = false;
+        // Lógica para outros períodos (7, 14, 30 dias)...
+      }
+    },
+    applyCustomPeriod() {
+      const startDate = new Date(this.customStartDate);
+      const endDate = new Date(this.customEndDate);
+
+      this.filteredAndCustomPosts = this.posts.filter(post => {
+        const postDate = new Date(post.log_data_acesso);
+        return postDate >= startDate && postDate <= endDate;
+      });
+
+      this.showCustomPeriodModal = false;
+    },
+    closeCustomPeriodModal() {
+      this.showCustomPeriodModal = false;
     },
     updateSearchTerm(newSearchTerm) {
       this.searchTerm = newSearchTerm;
@@ -128,5 +219,47 @@ export default {
 .data-table tbody tr:hover {
   background-color: #f0f0f0;
   transition: background-color 0.2s;
+}
+
+/* Estilos para o modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.date-inputs {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.date-inputs label {
+  margin-bottom: 0.5rem;
+}
+
+.date-inputs input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 1rem;
+}
+
+.modal-content button {
+  margin-top: 1rem;
 }
 </style>
