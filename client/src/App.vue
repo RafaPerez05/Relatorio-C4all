@@ -8,7 +8,7 @@
     
 
 
-    <div class="columns">
+    <!-- <div class="columns">
       <div class="column is-3 mt-2">
         <DropDown />
       </div>
@@ -16,16 +16,17 @@
         <DropDown2 />
       </div>
       <div class="column auto mt-6">
-        <CheckBox />
+        <CheckBox />  
       </div>
-    </div>
+    </div> -->
 
     <div>
       <timeline />
     </div>
-  </div>
+  
     <PostComponent />
   </div>
+</div>
 </template>
 
 <script>
@@ -39,10 +40,8 @@ export default {
 
 
 
-=======
-    CheckBox,
-    DropDown,
-    DropDown2,
+
+
   },
 };
 
