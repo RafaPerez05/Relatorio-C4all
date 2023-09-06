@@ -6,9 +6,7 @@
  <input type="checkbox" :id="id" v-model="check" :disabled="disabled == true ? 'disabled' : null" /> 
  
  <label class="checkbox" :for="id">{{ label }}
-
     Modo Tabela
-
 </label> 
  
 <slot></slot>
@@ -124,16 +122,6 @@
  
  
  
- .custom-check{ 
- 
-   display: block; 
- 
-   margin-bottom:  15px; 
-
-   
-
- 
- } 
  
   
  
@@ -152,9 +140,7 @@
    padding: 0 !important; 
  
    position: absolute !important; 
- 
-   left: -10000px; 
- 
+  
    white-space: nowrap !important; 
  
    width: 0.01em !important; 

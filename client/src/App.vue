@@ -1,8 +1,12 @@
 <template>
+
+
+
   <div>
     <div class="header">
       <!-- Conteúdo do cabeçalho aqui -->
     
+
 
     <div class="columns">
       <div class="column is-3 mt-2">
@@ -26,19 +30,22 @@
 
 <script>
 import PostComponent from './components/PostComponent.vue';
-import CheckBox from './components/Check-Box.vue';
-import DropDown from './components/DropDown.vue';
-import DropDown2 from './components/DropDown2.vue';
+
 
 export default {
   name: 'App',
   components: {
     PostComponent,
+
+
+
+=======
     CheckBox,
     DropDown,
     DropDown2,
   },
 };
+
 </script>
 
 <style>
