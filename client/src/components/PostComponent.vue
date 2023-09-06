@@ -1,66 +1,76 @@
 <template>
-  <div class="container">
-    <h1>Dados</h1>
-    <hr>
+  <div class="columns">
     <!-- Dropdown para filtrar por período -->
-    <div class="dropdown">
-      <label for="date-filter">Filtrar por período:</label>
-      <select id="date-filter" v-model="selectedPeriod" @change="handlePeriodChange">
-        <option value=""> TODOS </option>
-        <option value="7">Últimos 7 dias</option>
-        <option value="14">Últimos 14 dias</option>
-        <option value="30">Últimos 30 dias</option>
-        <option value="custom">Personalizado</option>
-      </select>
-    </div>
-    <search-bar @search="updateSearchTerm" />
 
-    <p class="error" v-if="error">{{ error }}</p>
-
-    <!-- Mensagem de aviso se não houver dados nos últimos 7 dias -->
-    <div v-if="selectedPeriod === '7' && filteredAndCustomPosts.length === 0">
-      <p>Nenhum registro encontrado nos últimos 7 dias.</p>
-    </div>
-
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Data de Acesso</th>
-            <th>Código de Usuário</th>
-            <th>Ação</th>
-            <th>Código de Ação</th>
-            <th>Código IP</th>
-            <th>Plataforma</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="post in filteredAndCustomPosts" :key="post._id">
-            <td>{{ formatDate(post.log_data_acesso) }}</td>
-            <td>{{ post.log_usuario }}</td>
-            <td>{{ post.log_texto_acao }}</td>
-            <td>{{ post.log_codigo_acao }}</td>
-            <td>{{ post.log_ip }}</td>
-            <td>{{ post.log_user_agent }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Modal para selecionar o período personalizado -->
-    <div v-if="showCustomPeriodModal" class="modal">
-      <div class="modal-content">
-        <h2>Selecionar Período Personalizado</h2>
-        <div class="date-inputs">
-          <label for="custom-start-date">Data Inicial:</label>
-          <input type="date" id="custom-start-date" v-model="customStartDate" />
-
-          <label for="custom-end-date">Data Final:</label>
-          <input type="date" id="custom-end-date" v-model="customEndDate" />
-        </div>
-        <button @click="applyCustomPeriod">Aplicar</button>
-        <button @click="closeCustomPeriodModal">Fechar</button>
+    <div class="column">
+      <span class="icon-text">
+          <span class="icon">
+            <i class="fa fa-calendar fa-lg"></i>
+          </span>
+        </span>
+      <div class="dropdown">
+        <select id="date-filter" v-model="selectedPeriod" @change="handlePeriodChange">
+          <option value=""> TODOS </option>
+          <option value="7">Últimos 7 dias</option>
+          <option value="14">Últimos 14 dias</option>
+          <option value="30">Últimos 30 dias</option>
+          <option value="custom">Personalizado</option>
+        </select>
       </div>
+    </div>
+
+    <div class="column is-three-fifths">
+      <search-bar @search="updateSearchTerm" />
+    </div>
+    <div class="column">
+      <check-box />
+    </div>
+
+  </div>
+  <p class="error" v-if="error">{{ error }}</p>
+  <!-- Mensagem de aviso se não houver dados nos últimos 7 dias -->
+
+  <!--TABELA DE DADOS-->
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Data de Acesso</th>
+          <th>Código de Usuário</th>
+          <th>Ação</th>
+          <th>Código de Ação</th>
+          <th>Código IP</th>
+          <th>Plataforma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="post in filteredAndCustomPosts" :key="post._id">
+          <td>{{ formatDate(post.log_data_acesso) }}</td>
+          <td>{{ post.log_usuario }}</td>
+          <td>{{ post.log_texto_acao }}</td>
+          <td>{{ post.log_codigo_acao }}</td>
+          <td>{{ post.log_ip }}</td>
+          <td>{{ post.log_user_agent }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+  <!-- Modal para selecionar o período personalizado -->
+  <div v-if="showCustomPeriodModal" class="modal">
+    <div class="modal-content">
+      <h2>Selecionar Período Personalizado</h2>
+      <div class="date-inputs">
+        <label for="custom-start-date">Data Inicial:</label>
+        <input type="date" id="custom-start-date" v-model="customStartDate" />
+
+        <label for="custom-end-date">Data Final:</label>
+        <input type="date" id="custom-end-date" v-model="customEndDate" />
+      </div>
+      <button @click="applyCustomPeriod">Aplicar</button>
+      <button @click="closeCustomPeriodModal">Fechar</button>
     </div>
   </div>
 </template>
@@ -68,10 +78,12 @@
 <script>
 import PostService from '../PostService';
 import SearchBar from '@/components/SearchBar.vue';
+import CheckBox from './Check-Box.vue';
 
 export default {
   components: {
-    SearchBar
+    SearchBar,
+    CheckBox
   },
   name: 'PostComponent',
   data() {
@@ -261,5 +273,10 @@ export default {
 
 .modal-content button {
   margin-top: 1rem;
+}
+
+.icon-text{
+  margin-right: 1rem;
+
 }
 </style>
