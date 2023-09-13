@@ -30,7 +30,7 @@
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  width: 50%;
+  width: 100%;
   font-size: 14px;
 }
 
