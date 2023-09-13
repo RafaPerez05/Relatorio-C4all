@@ -277,6 +277,7 @@ export default {
 
 .icon-text{
   margin-right: 1rem;
+  color: #fff;
 
 }
 </style>
