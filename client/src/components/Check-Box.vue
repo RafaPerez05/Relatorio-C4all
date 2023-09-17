@@ -169,10 +169,13 @@
     /* top: 5rem; */
    cursor: pointer; 
    /* margin-left: 65rem; */
+   color: #ffffff;
+   
    
    
  
  } 
+
  
   
  
@@ -188,9 +191,9 @@
  
    background-color: transparent; 
  
-   border: 2px solid #0079bf; 
+   border: 2px solid #ffffff; 
  
-   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05); 
+   box-shadow: 0 1px 2px rgba(255, 255, 255, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05); 
  
    padding: 10px; 
  
@@ -224,7 +227,7 @@
  
    height: 14px; 
  
-   border: solid #0079bf; 
+   border: solid #ffffff; 
  
    border-width: 0 2px 2px 0; 
  
@@ -238,7 +241,7 @@
  
  .custom-check input:disabled ~ label { 
  
-   color: grey; 
+   color: rgb(255, 255, 255); 
  
    cursor: not-allowed; 
  
@@ -250,9 +253,9 @@
  
  .custom-check input:checked:disabled + label:after { 
  
-   opacity: 0.5; 
+   /* opacity: 0.5;  */
  
-   border-color: grey; 
+   border-color: rgb(255, 255, 255); 
  
  } 
  
