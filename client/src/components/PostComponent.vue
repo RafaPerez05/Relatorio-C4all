@@ -36,21 +36,23 @@
       <thead>
         <tr>
           <th>Data de Acesso</th>
+          <th>Hora</th>
           <th>Código de Usuário</th>
-          <th>Ação</th>
+          <th>Nome</th>
           <th>Código de Ação</th>
-          <th>Código IP</th>
-          <th>Plataforma</th>
+          <th>Dispositivo</th>
+          <th>Ação</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="post in filteredAndCustomPosts" :key="post._id">
-          <td>{{ formatDate(post.log_data_acesso) }}</td>
-          <td>{{ post.log_usuario }}</td>
-          <td>{{ post.log_texto_acao }}</td>
-          <td>{{ post.log_codigo_acao }}</td>
-          <td>{{ post.log_ip }}</td>
-          <td>{{ post.log_user_agent }}</td>
+          <td>{{ formatDate(post.log_acao_data.data).date }}</td>
+          <td>{{ formatDate(post.log_acao_data.data).time }}</td>
+          <td>{{ post.log_usuario_id }}</td>
+          <td>{{ post.log_usuario_nome }}</td>
+          <td>{{ post.log_acao_codigo}}</td>
+          <td>{{ post.log_dispositivo_nome }}</td>
+          <td>{{ post.log_acao_codigo}}</td>
         </tr>
       </tbody>
     </table>
@@ -155,11 +157,18 @@ export default {
     }
   },
   methods: {
-    formatDate(dateString) {
-      const date = new Date(dateString);
-      const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-      return formattedDate;
-    },
+    formatDate(dateTimeString) {
+    const date = new Date(dateTimeString);
+    const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const formattedTime = `${hours}:${minutes}:${seconds}`;
+    return {
+      date: formattedDate,
+      time: formattedTime
+    };
+  },
     handlePeriodChange() {
       if (this.selectedPeriod === 'custom') {
         this.showCustomPeriodModal = true;
