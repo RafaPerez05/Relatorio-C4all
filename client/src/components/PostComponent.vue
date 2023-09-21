@@ -4,10 +4,10 @@
 
     <div class="column">
       <span class="icon-text">
-          <span class="icon">
-            <i class="fa fa-calendar fa-lg"></i>
-          </span>
+        <span class="icon">
+          <i class="fa fa-calendar fa-lg"></i>
         </span>
+      </span>
       <div class="dropdown">
         <select id="date-filter" v-model="selectedPeriod" @change="handlePeriodChange">
           <option value=""> TODOS </option>
@@ -22,9 +22,6 @@
     <div class="column is-three-fifths">
       <search-bar @search="updateSearchTerm" />
     </div>
-    <div class="column">
-      <check-box />
-    </div>
 
   </div>
   <p class="error" v-if="error">{{ error }}</p>
@@ -36,21 +33,22 @@
       <thead>
         <tr>
           <th>Data de Acesso</th>
+          <th>Hora</th>
           <th>Código de Usuário</th>
-          <th>Ação</th>
+          <th>Nome</th>
           <th>Código de Ação</th>
-          <th>Código IP</th>
-          <th>Plataforma</th>
+          <th>Dispositivo</th>
+          <th>Ação</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="post in filteredAndCustomPosts" :key="post._id">
-          <td>{{ formatDate(post.log_data_acesso) }}</td>
-          <td>{{ post.log_usuario }}</td>
-          <td>{{ post.log_texto_acao }}</td>
-          <td>{{ post.log_codigo_acao }}</td>
-          <td>{{ post.log_ip }}</td>
-          <td>{{ post.log_user_agent }}</td>
+          <td>{{ formatDate(post.log_acao_data.data).date }}</td>
+          <td>{{ formatDate(post.log_acao_data.data).time }}</td>
+          <td>{{ post.log_usuario_id }}</td>
+          <td>{{ post.log_usuario_nome }}</td>
+          <td>{{ post.log_dispositivo_nome }}</td>
+          <td>{{ post.log_acao_codigo }}</td>
         </tr>
       </tbody>
     </table>
@@ -78,12 +76,10 @@
 <script>
 import PostService from '../PostService';
 import SearchBar from '@/components/SearchBar.vue';
-import CheckBox from './Check-Box.vue';
 
 export default {
   components: {
-    SearchBar,
-    CheckBox
+    SearchBar
   },
   name: 'PostComponent',
   data() {
@@ -106,59 +102,54 @@ export default {
   },
   computed: {
     filteredAndCustomPosts() {
-      let filteredPosts = this.posts;
+      return this.posts.filter(post => {
+        const postDate = new Date(post.log_acao_data.data);
 
-      if (this.selectedPeriod === '7') {
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 7);
-        filteredPosts = filteredPosts.filter(post => {
-          const postDate = new Date(post.log_data_acesso);
-          return postDate >= startDate;
-        });
-      } else if (this.selectedPeriod === '14') {
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 14);
-        filteredPosts = filteredPosts.filter(post => {
-          const postDate = new Date(post.log_data_acesso);
-          return postDate >= startDate;
-        });
-      } else if (this.selectedPeriod === '30') {
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 30);
-        filteredPosts = filteredPosts.filter(post => {
-          const postDate = new Date(post.log_data_acesso);
-          return postDate >= startDate;
-        });
-      } else if (this.selectedPeriod === 'custom') {
-        if (this.customStartDate && this.customEndDate) {
+        // Filtragem por período selecionado ou personalizado
+        if (this.selectedPeriod === 'custom' && this.customStartDate && this.customEndDate) {
           const startDate = new Date(this.customStartDate);
           const endDate = new Date(this.customEndDate);
-          filteredPosts = filteredPosts.filter(post => {
-            const postDate = new Date(post.log_data_acesso);
-            return postDate >= startDate && postDate <= endDate;
-          });
+          return postDate >= startDate && postDate <= endDate;
+        } else if (this.selectedPeriod === '7' || this.selectedPeriod === '14' || this.selectedPeriod === '30') {
+          const daysAgo = parseInt(this.selectedPeriod, 10);
+          const startDate = new Date();
+          startDate.setDate(startDate.getDate() - daysAgo);
+          return postDate >= startDate;
         }
-      }
 
-      if (!this.searchTerm) {
-        return filteredPosts;
-      }
+        // DATA NA BARRA DE PESQUISAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        const searchTermDate = new Date(this.searchTerm);
+        if (!isNaN(searchTermDate) && isFinite(searchTermDate)) {
+          return postDate.toDateString() === searchTermDate.toDateString();
+        }
 
-      const lowerCaseSearch = this.searchTerm.toLowerCase();
-      return filteredPosts.filter(post => {
-        return (
-          post.log_usuario.toLowerCase().includes(lowerCaseSearch) ||
-          post.log_texto_acao.toLowerCase().includes(lowerCaseSearch) ||
-          post.log_ip.toLowerCase().includes(lowerCaseSearch)
-        );
+        // Pesquisa por outros campos
+        if (this.searchTerm) {
+          const lowerCaseSearch = this.searchTerm.toLowerCase();
+          return (
+            (post.log_usuario_nome && post.log_usuario_nome.toLowerCase().includes(lowerCaseSearch)) ||
+            (post.log_texto_acao && post.log_texto_acao.toLowerCase().includes(lowerCaseSearch)) ||
+            (post.log_dispositivo_ip && post.log_dispositivo_ip.toLowerCase().includes(lowerCaseSearch))
+          );
+        }
+
+        // Se nenhum filtro específico ou de pesquisa for aplicado, retornar true para incluir o post
+        return true;
       });
     }
   },
   methods: {
-    formatDate(dateString) {
-      const date = new Date(dateString);
+    formatDate(dateTimeString) {
+      const date = new Date(dateTimeString);
       const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-      return formattedDate;
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      const seconds = date.getSeconds();
+      const formattedTime = `${hours}:${minutes}:${seconds}`;
+      return {
+        date: formattedDate,
+        time: formattedTime
+      };
     },
     handlePeriodChange() {
       if (this.selectedPeriod === 'custom') {
@@ -275,7 +266,7 @@ export default {
   margin-top: 1rem;
 }
 
-.icon-text{
+.icon-text {
   margin-right: 1rem;
   color: #fff;
 

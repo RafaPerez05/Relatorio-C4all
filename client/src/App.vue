@@ -20,10 +20,6 @@
       </div>
     </div> -->
 
-    <div>
-      <timeline />
-    </div>
-  
     <PostComponent />
   </div>
 </div>
