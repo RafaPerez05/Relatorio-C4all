@@ -1,6 +1,6 @@
 <template>
   <div class="search-bar">
-    <input class="search-input" v-model="searchTerm" placeholder="Pesquisar por usuário, assunto, data ou ação" />
+    <input class="search-input" v-model="searchTerm" placeholder="Localizar por data ou assunto" />
   </div>
 </template>
 

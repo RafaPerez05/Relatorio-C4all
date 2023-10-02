@@ -6,7 +6,7 @@ class PostService {
       const response = await axios.get('http://localhost:5000/api/posts');
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch posts');
+      throw new Error('TEM PARADA ERRADA');
     }
   }
 }
