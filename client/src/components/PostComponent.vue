@@ -1,5 +1,6 @@
 <template>
-  <header class="hero is-white is-fixed-top">
+  <div id="Post">
+    <header class="hero is-white is-fixed-top">
     <div class="hero-body">
       <div class="columns is-vcentered">
         <div class="column is-half">
@@ -27,16 +28,18 @@
       </thead>
       <tbody>
         <!-- Aqui você pode adicionar os dados da tabela usando v-for -->
-        <tr v-for="post in filteredAndCustomPosts" :key="post._id">
+          <tr v-for="post in filteredAndCustomPosts" :key="post._id">
           <!-- SEPARANDO OS A STRING DATA -->
           <td>{{ formatSpecialDate(post.log_acao_data.date) }}</td>
           <td>{{ formatTime(post.log_acao_data.date) }}</td>
           <td>{{ post.log_usuario_nome }}</td>
-          <td>{{ getMensagemByCodigo(post.log_acao_codigo) }}</td>
+          <td>{{ getMensagemByCodigo(post.log_acao_codigo, post) }}</td>
           <td>{{ post.log_dispositivo_nome }}</td>
         </tr>
       </tbody>
     </table>
+  </div>
+
 </template>
 
 <script>
@@ -44,35 +47,37 @@ import PostService from '../PostService';
 import SearchBar from '@/components/SearchBar.vue';
 import DropdownAlunos from '@/components/DropdownAlunos.vue';
 //definindo a variavel biblioteca como global aqui -->
+
 const mensagemLibrary = {
+
   conta_perfil: {
     alterar_senha: "Alterou a senha do perfil.",
     alterar_foto: 'Alterou a foto do perfil.',
     alterar_dados: 'Alterou dados cadastrais do perfil.',
     alterar_email: 'Alterou e-mail do perfil.',
-    alterar_cpf: 'Atualizou o CPF para %usuario-cpf%.',
+    alterar_cpf: 'Atualizou o CPF para {usuario-cpf}.',
     gerar_senha: 'Gerou senha de acesso.',
-    remover_dispositivo: 'Removeu o dispositivo conectado a conta. Dispositivo %device-id% - %device-nome%.',
-    associar_google: 'Associou a conta google %conta-google% em seu perfil na plataforma.',
-    associar_apple: 'Associou a conta apple %conta-apple% em seu perfil na plataforma.',
-    associar_microsoft: 'Associou a conta microsoft %conta-microsoft% em seu perfil na plataforma.',
-    desassociar_google: 'Desassociou a conta google %conta-google% em seu perfil na plataforma.',
-    desassociar_apple: 'Desassociou a conta apple %conta-apple% em seu perfil na plataforma.',
-    desassociar_microsoft: 'Desassociou a conta microsoft %conta-microsoft% em seu perfil na plataforma.'
+    remover_dispositivo: 'Removeu o dispositivo conectado a conta. Dispositivo {device-id} - {device-nome}.',
+    associar_google: 'Associou a conta google {conta_google} em seu perfil na plataforma.',
+    associar_apple: 'Associou a conta apple {conta-apple} em seu perfil na plataforma.',
+    associar_microsoft: 'Associou a conta microsoft {conta-microsoft} em seu perfil na plataforma.',
+    desassociar_google: 'Desassociou a conta google {conta_google} em seu perfil na plataforma.',
+    desassociar_apple: 'Desassociou a conta apple {conta-apple} em seu perfil na plataforma.',
+    desassociar_microsoft: 'Desassociou a conta microsoft {conta-microsoft} em seu perfil na plataforma.'
   },
   conta_acesso: {
     sair: 'Desconectou-se da plataforma.',
     padrao: 'Conectou-se na plataforma com usuário e senha.',
-    memorizado: 'Conectou-se na plataforma com login memorizado.',
-    microsoft: 'Conectou-se na plataforma pela conta microsoft %conta-microsoft%.',
-    google: 'Conectou-se na plataforma pela conta google %conta-google%.',
-    apple: 'Conectou-se na plataforma pela conta apple %conta-apple%.'
+    memorizado: 'Conectou-se na plataforma com login memorizado.', 
+    microsoft: 'Conectou-se na plataforma pela conta microsoft {conta-microsoft}.',
+    google: 'Conectou-se na plataforma pela conta google {conta_google}.',
+    apple: 'Conectou-se na plataforma pela conta apple {conta-apple}.'
   },
   conta_cadastro: {
     padrao: 'Criou uma conta na plataforma com cadastro padrão.',
-    microsoft: 'Criou uma conta na plataforma com o login microsoft %conta-microsoft%.',
-    google: 'Criou uma conta na plataforma com o login google %conta-google%.',
-    apple: 'Criou uma conta na plataforma com o login apple %conta-apple%.'
+    microsoft: 'Criou uma conta na plataforma com o login microsoft {conta-microsoft}.',
+    google: 'Criou uma conta na plataforma com o login google {conta_google}.',
+    apple: 'Criou uma conta na plataforma com o login apple {conta-apple}.'
   },
   conta_recuperar: {
     solicitar: 'Solicitou recuperação da conta por e-mail.',
@@ -98,15 +103,16 @@ export default {
       posts: [],
       error: '',
       searchTerm: '',
+      selectedStudent: '',
     };
   },
   async created() {
     try {
-      this.posts = await PostService.getPosts();
-    } catch (err) {
-      this.error = err.message;
-    }
-  },
+    this.posts = await PostService.getPosts();
+  } catch (err) {
+    this.error = err.message;
+  }
+},
 
   computed: {
     filteredAndCustomPosts() {
@@ -114,14 +120,24 @@ export default {
     }
   },
   methods: {
+  
   //BIBLIOTECA AQUI
-  getMensagemByCodigo(codigo) {
-      const partes = codigo.split('.');
-      if (partes.length === 2 && mensagemLibrary[partes[0]] && mensagemLibrary[partes[0]][partes[1]]) {
-        return mensagemLibrary[partes[0]][partes[1]];
-      }
-      return 'Mensagem não encontrada'; // Mensagem padrão caso o código não seja encontrado
-    },
+  getMensagemByCodigo(codigo, post) {
+    const partes = codigo.split('.');
+  if (partes.length === 2 && mensagemLibrary[partes[0]] && mensagemLibrary[partes[0]][partes[1]]) {
+    var mensagem = mensagemLibrary[partes[0]][partes[1]];
+    
+    mensagem = mensagem.replace('{device-nome}', post.log_acao_extra.device_nome);
+    mensagem = mensagem.replace('{device-id}', post.log_acao_extra.device_id);
+    mensagem = mensagem.replace('{usuario-cpf}', post.log_acao_extra.usuario_cpf);
+    mensagem = mensagem.replace('{conta_google}', post.log_acao_extra.conta_google);
+    mensagem = mensagem.replace('{conta-microsoft}', post.log_acao_extra.conta_microsoft);
+    mensagem = mensagem.replace('{conta-apple}', post.log_acao_extra.conta_apple);
+
+    return mensagem;
+  }
+  return 'Mensagem não encontrada';
+},
 
   //BARRA DE PESQUISA DAQUI
   shouldIncludePost(post) {
