@@ -1,96 +1,103 @@
 <template>
-  <div class="columns">
-    <!-- Dropdown para filtrar por período -->
-
-    <div class="column">
-      <span class="icon-text">
-        <span class="icon">
-          <i class="fa fa-calendar fa-lg"></i>
-        </span>
-      </span>
-      <div class="dropdown">
-        <select id="date-filter" v-model="selectedPeriod" @change="handlePeriodChange">
-          <option value=""> TODOS </option>
-          <option value="7">Últimos 7 dias</option>
-          <option value="14">Últimos 14 dias</option>
-          <option value="30">Últimos 30 dias</option>
-          <option value="custom">Personalizado</option>
-        </select>
+  <header class="hero is-white is-fixed-top">
+    <div class="hero-body">
+      <div class="columns is-vcentered">
+        <div class="column is-half">
+          <DropdownAlunos />
+        </div>
+        <div class="column is-half"> <!-- Mesma largura aqui -->
+          <div class="field has-addons">
+            <search-bar @search="updateSearchTerm" />
+            
+          </div>
+        </div>
       </div>
     </div>
-
-    <div class="column is-three-fifths">
-      <search-bar @search="updateSearchTerm" />
-    </div>
-
-  </div>
-  <p class="error" v-if="error">{{ error }}</p>
-  <!-- Mensagem de aviso se não houver dados nos últimos 7 dias -->
-
-  <!--TABELA DE DADOS-->
-  <div class="table-container">
-    <table class="data-table">
+  </header>
+  <!-- TABELA DE DADOS -->
+  <table class="table is-fullwidth">
       <thead>
         <tr>
-          <th>Data de Acesso</th>
+          <th>Dia</th>
           <th>Hora</th>
-          <th>Código de Usuário</th>
-          <th>Nome</th>
-          <th>Código de Ação</th>
-          <th>Dispositivo</th>
+          <th>Usuário</th>
           <th>Ação</th>
+          <th>Dispositivo</th>
         </tr>
       </thead>
       <tbody>
+        <!-- Aqui você pode adicionar os dados da tabela usando v-for -->
         <tr v-for="post in filteredAndCustomPosts" :key="post._id">
-          <td>{{ formatDate(post.log_acao_data.data).date }}</td>
-          <td>{{ formatDate(post.log_acao_data.data).time }}</td>
-          <td>{{ post.log_usuario_id }}</td>
+          <!-- SEPARANDO OS A STRING DATA -->
+          <td>{{ formatSpecialDate(post.log_acao_data.date) }}</td>
+          <td>{{ formatTime(post.log_acao_data.date) }}</td>
           <td>{{ post.log_usuario_nome }}</td>
+          <td>{{ getMensagemByCodigo(post.log_acao_codigo) }}</td>
           <td>{{ post.log_dispositivo_nome }}</td>
-          <td>{{ post.log_acao_codigo }}</td>
         </tr>
       </tbody>
     </table>
-  </div>
-
-
-
-  <!-- Modal para selecionar o período personalizado -->
-  <div v-if="showCustomPeriodModal" class="modal">
-    <div class="modal-content">
-      <h2>Selecionar Período Personalizado</h2>
-      <div class="date-inputs">
-        <label for="custom-start-date">Data Inicial:</label>
-        <input type="date" id="custom-start-date" v-model="customStartDate" />
-
-        <label for="custom-end-date">Data Final:</label>
-        <input type="date" id="custom-end-date" v-model="customEndDate" />
-      </div>
-      <button @click="applyCustomPeriod">Aplicar</button>
-      <button @click="closeCustomPeriodModal">Fechar</button>
-    </div>
-  </div>
 </template>
 
 <script>
 import PostService from '../PostService';
 import SearchBar from '@/components/SearchBar.vue';
+import DropdownAlunos from '@/components/DropdownAlunos.vue';
+//definindo a variavel biblioteca como global aqui -->
+const mensagemLibrary = {
+  conta_perfil: {
+    alterar_senha: "Alterou a senha do perfil.",
+    alterar_foto: 'Alterou a foto do perfil.',
+    alterar_dados: 'Alterou dados cadastrais do perfil.',
+    alterar_email: 'Alterou e-mail do perfil.',
+    alterar_cpf: 'Atualizou o CPF para %usuario-cpf%.',
+    gerar_senha: 'Gerou senha de acesso.',
+    remover_dispositivo: 'Removeu o dispositivo conectado a conta. Dispositivo %device-id% - %device-nome%.',
+    associar_google: 'Associou a conta google %conta-google% em seu perfil na plataforma.',
+    associar_apple: 'Associou a conta apple %conta-apple% em seu perfil na plataforma.',
+    associar_microsoft: 'Associou a conta microsoft %conta-microsoft% em seu perfil na plataforma.',
+    desassociar_google: 'Desassociou a conta google %conta-google% em seu perfil na plataforma.',
+    desassociar_apple: 'Desassociou a conta apple %conta-apple% em seu perfil na plataforma.',
+    desassociar_microsoft: 'Desassociou a conta microsoft %conta-microsoft% em seu perfil na plataforma.'
+  },
+  conta_acesso: {
+    sair: 'Desconectou-se da plataforma.',
+    padrao: 'Conectou-se na plataforma com usuário e senha.',
+    memorizado: 'Conectou-se na plataforma com login memorizado.',
+    microsoft: 'Conectou-se na plataforma pela conta microsoft %conta-microsoft%.',
+    google: 'Conectou-se na plataforma pela conta google %conta-google%.',
+    apple: 'Conectou-se na plataforma pela conta apple %conta-apple%.'
+  },
+  conta_cadastro: {
+    padrao: 'Criou uma conta na plataforma com cadastro padrão.',
+    microsoft: 'Criou uma conta na plataforma com o login microsoft %conta-microsoft%.',
+    google: 'Criou uma conta na plataforma com o login google %conta-google%.',
+    apple: 'Criou uma conta na plataforma com o login apple %conta-apple%.'
+  },
+  conta_recuperar: {
+    solicitar: 'Solicitou recuperação da conta por e-mail.',
+    redefinir_senha: 'Redefiniu senha de acesso.'
+  },
+  conta_seguranca: {
+    ativar_2fa: 'Ativou autenticação de 2 fatores.',
+    atualizar_2fa: 'Atualizou a autenticação de 2 fatores.',
+    validar_2fa: 'Validou autenticação de 2 fatores.'
+  }
+};
+
 
 export default {
   components: {
-    SearchBar
+    SearchBar,
+    DropdownAlunos
   },
+
   name: 'PostComponent',
   data() {
     return {
       posts: [],
       error: '',
       searchTerm: '',
-      selectedPeriod: null,
-      showCustomPeriodModal: false,
-      customStartDate: '',
-      customEndDate: ''
     };
   },
   async created() {
@@ -100,175 +107,99 @@ export default {
       this.error = err.message;
     }
   },
+
   computed: {
     filteredAndCustomPosts() {
-      return this.posts.filter(post => {
-        const postDate = new Date(post.log_acao_data.data);
-
-        // Filtragem por período selecionado ou personalizado
-        if (this.selectedPeriod === 'custom' && this.customStartDate && this.customEndDate) {
-          const startDate = new Date(this.customStartDate);
-          const endDate = new Date(this.customEndDate);
-          return postDate >= startDate && postDate <= endDate;
-        } else if (this.selectedPeriod === '7' || this.selectedPeriod === '14' || this.selectedPeriod === '30') {
-          const daysAgo = parseInt(this.selectedPeriod, 10);
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - daysAgo);
-          return postDate >= startDate;
-        }
-
-        // DATA NA BARRA DE PESQUISAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        const searchTermDate = new Date(this.searchTerm);
-        if (!isNaN(searchTermDate) && isFinite(searchTermDate)) {
-          return postDate.toDateString() === searchTermDate.toDateString();
-        }
-
-        // Pesquisa por outros campos
-        if (this.searchTerm) {
-          const lowerCaseSearch = this.searchTerm.toLowerCase();
-          return (
-            (post.log_usuario_nome && post.log_usuario_nome.toLowerCase().includes(lowerCaseSearch)) ||
-            (post.log_texto_acao && post.log_texto_acao.toLowerCase().includes(lowerCaseSearch)) ||
-            (post.log_dispositivo_ip && post.log_dispositivo_ip.toLowerCase().includes(lowerCaseSearch))
-          );
-        }
-
-        // Se nenhum filtro específico ou de pesquisa for aplicado, retornar true para incluir o post
-        return true;
-      });
+      return this.posts.filter(post => this.shouldIncludePost(post));
     }
   },
   methods: {
-    formatDate(dateTimeString) {
-      const date = new Date(dateTimeString);
-      const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
-      const seconds = date.getSeconds();
-      const formattedTime = `${hours}:${minutes}:${seconds}`;
-      return {
-        date: formattedDate,
-        time: formattedTime
-      };
-    },
-    handlePeriodChange() {
-      if (this.selectedPeriod === 'custom') {
-        this.showCustomPeriodModal = true;
-      } else {
-        this.showCustomPeriodModal = false;
-        // Lógica para outros períodos (7, 14, 30 dias)...
+  //BIBLIOTECA AQUI
+  getMensagemByCodigo(codigo) {
+      const partes = codigo.split('.');
+      if (partes.length === 2 && mensagemLibrary[partes[0]] && mensagemLibrary[partes[0]][partes[1]]) {
+        return mensagemLibrary[partes[0]][partes[1]];
       }
+      return 'Mensagem não encontrada'; // Mensagem padrão caso o código não seja encontrado
     },
-    applyCustomPeriod() {
-      const startDate = new Date(this.customStartDate);
-      const endDate = new Date(this.customEndDate);
 
-      this.filteredAndCustomPosts = this.posts.filter(post => {
-        const postDate = new Date(post.log_data_acesso);
-        return postDate >= startDate && postDate <= endDate;
-      });
+  //BARRA DE PESQUISA DAQUI
+  shouldIncludePost(post) {
 
-      this.showCustomPeriodModal = false;
-    },
-    closeCustomPeriodModal() {
-      this.showCustomPeriodModal = false;
-    },
-    updateSearchTerm(newSearchTerm) {
-      this.searchTerm = newSearchTerm;
+    if (this.searchTerm) {
+      return this.isMatchingSearchTerm(post);
     }
+    else{
+      return true;
+    }
+  },
+  isMatchingSearchTerm(post) {
+    const lowerCaseSearch = this.searchTerm.toLowerCase();
+    const formattedSearch = this.formatSearchDate(lowerCaseSearch); // Formatar a data inserida
+
+    return (
+      (post.log_usuario_nome && post.log_usuario_nome.toLowerCase().includes(lowerCaseSearch)) ||
+      (post.log_acao_codigo && post.log_acao_codigo.toLowerCase().includes(lowerCaseSearch)) ||
+      (this.formatSpecialDate(post.log_acao_data.date).includes(formattedSearch)) // Usar a data formatada na pesquisa
+    );
+  },
+  formatSearchDate(dateString) {
+    // Remova espaços em branco, traços e barras da string de data
+    const cleanedString = dateString.replace(/[/\s-]/g, '');
+
+    // Certifique-se de que a string de data tenha 8 caracteres (ddmmyyyy)
+    if (cleanedString.length !== 8) {
+      return dateString;
+    }
+
+    const day = cleanedString.substr(0, 2);
+    const month = cleanedString.substr(2, 2);
+    const year = cleanedString.substr(4, 4);
+
+    // Certifique-se de que os valores são numéricos
+    if (isNaN(day) || isNaN(month) || isNaN(year)) {
+      return dateString;
+    }
+
+    // Formatar como "dd/mm/yyyy"
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+  },
+  formatSpecialDate(dateTime) {
+    const dateObj = new Date(dateTime);
+    const today = new Date();
+    const diffInDays = Math.floor((today - dateObj) / (24 * 60 * 60 * 1000));
+
+    if (diffInDays === 0) {
+      return 'Hoje';
+    } else if (diffInDays === 1) {
+      return 'Ontem';
+    } else if (diffInDays >= 2 && diffInDays <= 7) {
+      const daysOfWeek = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+      return daysOfWeek[dateObj.getDay()];
+    } else {
+      const day = dateObj.getDate();
+      const month = dateObj.getMonth() + 1;
+      const year = dateObj.getFullYear();
+      return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+    }
+  },
+  formatTime(dateTime) {
+    const dateObj = new Date(dateTime);
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+
+    // Formatar como "hh:mm:ss"
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  },
+  updateSearchTerm(newSearchTerm) {
+    this.searchTerm = newSearchTerm;
   }
+}
+
 };
+
 </script>
 
 <style scoped>
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-}
 
-.error {
-  color: red;
-}
-
-.table-container {
-  overflow-x: auto;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #fff;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-}
-
-.data-table th,
-.data-table td {
-  padding: 1rem;
-  text-align: left;
-}
-
-.data-table th {
-  background-color: #f8f8f8;
-  font-weight: bold;
-  border-bottom: 1px solid #ddd;
-}
-
-.data-table tbody tr:nth-child(even) {
-  background-color: #f8f8f8;
-}
-
-.data-table tbody tr:hover {
-  background-color: #f0f0f0;
-  transition: background-color 0.2s;
-}
-
-/* Estilos para o modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.modal-content {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 5px;
-}
-
-.date-inputs {
-  display: flex;
-  flex-direction: column;
-  margin-top: 1rem;
-}
-
-.date-inputs label {
-  margin-bottom: 0.5rem;
-}
-
-.date-inputs input {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  margin-bottom: 1rem;
-}
-
-.modal-content button {
-  margin-top: 1rem;
-}
-
-.icon-text {
-  margin-right: 1rem;
-  color: #fff;
-
-}
 </style>

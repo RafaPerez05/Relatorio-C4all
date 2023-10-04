@@ -1,6 +1,12 @@
 <template>
-  <div class="search-bar">
-    <input class="search-input" v-model="searchTerm" placeholder="Pesquisar por usuário, assunto, data ou ação" />
+  <div class="control is-expanded has-icons-right">
+    <input class="input" type="text" v-model="searchTerm" placeholder="Localizar por data ou assunto">
+    <span class="icon is-right">
+      <i class="fa fa-search"></i>
+    </span>
+  </div>
+  <div class="control">
+    <a class="button is-success" @click="handleInput">Filtrar</a>
   </div>
 </template>
 
@@ -19,16 +25,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.search-bar {
-  margin-bottom: 1rem;
-}
-
-.search-input {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  font-size: 14px;
-}
-</style>
+<style scoped></style>
