@@ -1,13 +1,21 @@
 <template>
-  <div class="columns">
-    <!-- Dropdown para filtrar por período -->
-    <div class="column is-three-fifths">
-      <search-bar @search="updateSearchTerm" />
+  <header class="hero is-white is-fixed-top">
+    <div class="hero-body">
+      <div class="columns is-vcentered">
+        <div class="column is-half">
+          <DropdownAlunos />
+        </div>
+        <div class="column is-half"> <!-- Mesma largura aqui -->
+          <div class="field has-addons">
+            <search-bar @search="updateSearchTerm" />
+            
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </header>
   <!-- TABELA DE DADOS -->
-  <div class="table-container">
-    <table class="data-table">
+  <table class="table is-fullwidth">
       <thead>
         <tr>
           <th>Dia</th>
@@ -18,28 +26,70 @@
         </tr>
       </thead>
       <tbody>
+        <!-- Aqui você pode adicionar os dados da tabela usando v-for -->
         <tr v-for="post in filteredAndCustomPosts" :key="post._id">
           <!-- SEPARANDO OS A STRING DATA -->
           <td>{{ formatSpecialDate(post.log_acao_data.date) }}</td>
           <td>{{ formatTime(post.log_acao_data.date) }}</td>
           <td>{{ post.log_usuario_nome }}</td>
-          <td>{{ post.log_acao_codigo }}</td>
+          <td>{{ getMensagemByCodigo(post.log_acao_codigo) }}</td>
           <td>{{ post.log_dispositivo_nome }}</td>
         </tr>
       </tbody>
     </table>
-  </div>
 </template>
 
 <script>
 import PostService from '../PostService';
 import SearchBar from '@/components/SearchBar.vue';
-
+import DropdownAlunos from '@/components/DropdownAlunos.vue';
+//definindo a variavel biblioteca como global aqui -->
+const mensagemLibrary = {
+  conta_perfil: {
+    alterar_senha: "Alterou a senha do perfil.",
+    alterar_foto: 'Alterou a foto do perfil.',
+    alterar_dados: 'Alterou dados cadastrais do perfil.',
+    alterar_email: 'Alterou e-mail do perfil.',
+    alterar_cpf: 'Atualizou o CPF para %usuario-cpf%.',
+    gerar_senha: 'Gerou senha de acesso.',
+    remover_dispositivo: 'Removeu o dispositivo conectado a conta. Dispositivo %device-id% - %device-nome%.',
+    associar_google: 'Associou a conta google %conta-google% em seu perfil na plataforma.',
+    associar_apple: 'Associou a conta apple %conta-apple% em seu perfil na plataforma.',
+    associar_microsoft: 'Associou a conta microsoft %conta-microsoft% em seu perfil na plataforma.',
+    desassociar_google: 'Desassociou a conta google %conta-google% em seu perfil na plataforma.',
+    desassociar_apple: 'Desassociou a conta apple %conta-apple% em seu perfil na plataforma.',
+    desassociar_microsoft: 'Desassociou a conta microsoft %conta-microsoft% em seu perfil na plataforma.'
+  },
+  conta_acesso: {
+    sair: 'Desconectou-se da plataforma.',
+    padrao: 'Conectou-se na plataforma com usuário e senha.',
+    memorizado: 'Conectou-se na plataforma com login memorizado.',
+    microsoft: 'Conectou-se na plataforma pela conta microsoft %conta-microsoft%.',
+    google: 'Conectou-se na plataforma pela conta google %conta-google%.',
+    apple: 'Conectou-se na plataforma pela conta apple %conta-apple%.'
+  },
+  conta_cadastro: {
+    padrao: 'Criou uma conta na plataforma com cadastro padrão.',
+    microsoft: 'Criou uma conta na plataforma com o login microsoft %conta-microsoft%.',
+    google: 'Criou uma conta na plataforma com o login google %conta-google%.',
+    apple: 'Criou uma conta na plataforma com o login apple %conta-apple%.'
+  },
+  conta_recuperar: {
+    solicitar: 'Solicitou recuperação da conta por e-mail.',
+    redefinir_senha: 'Redefiniu senha de acesso.'
+  },
+  conta_seguranca: {
+    ativar_2fa: 'Ativou autenticação de 2 fatores.',
+    atualizar_2fa: 'Atualizou a autenticação de 2 fatores.',
+    validar_2fa: 'Validou autenticação de 2 fatores.'
+  }
+};
 
 
 export default {
   components: {
     SearchBar,
+    DropdownAlunos
   },
 
   name: 'PostComponent',
@@ -65,7 +115,13 @@ export default {
   },
   methods: {
   //BIBLIOTECA AQUI
-
+  getMensagemByCodigo(codigo) {
+      const partes = codigo.split('.');
+      if (partes.length === 2 && mensagemLibrary[partes[0]] && mensagemLibrary[partes[0]][partes[1]]) {
+        return mensagemLibrary[partes[0]][partes[1]];
+      }
+      return 'Mensagem não encontrada'; // Mensagem padrão caso o código não seja encontrado
+    },
 
   //BARRA DE PESQUISA DAQUI
   shouldIncludePost(post) {
@@ -145,94 +201,5 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-}
 
-.error {
-  color: red;
-}
-
-.table-container {
-  overflow-x: auto;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #fff;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-}
-
-.data-table th,
-.data-table td {
-  padding: 1rem;
-  text-align: left;
-}
-
-.data-table th {
-  background-color: #f8f8f8;
-  font-weight: bold;
-  border-bottom: 1px solid #ddd;
-}
-
-.data-table tbody tr:nth-child(even) {
-  background-color: #f8f8f8;
-}
-
-.data-table tbody tr:hover {
-  background-color: #f0f0f0;
-  transition: background-color 0.2s;
-}
-
-/* Estilos para o modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.modal-content {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 5px;
-}
-
-.date-inputs {
-  display: flex;
-  flex-direction: column;
-  margin-top: 1rem;
-}
-
-.date-inputs label {
-  margin-bottom: 0.5rem;
-}
-
-.date-inputs input {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  margin-bottom: 1rem;
-}
-
-.modal-content button {
-  margin-top: 1rem;
-}
-
-.icon-text {
-  margin-right: 1rem;
-  color: #fff;
-
-}
 </style>

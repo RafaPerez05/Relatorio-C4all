@@ -1,4 +1,3 @@
-***********BIBLIOTECA DE MENSAGENS************
 'conta_perfil' => [
     'alterar_senha' => "Alterou a senha do perfil.",
     'alterar_foto' => 'Alterou a foto do perfil.',
