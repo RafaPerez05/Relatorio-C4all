@@ -6,22 +6,8 @@
       <i class="fa fa-search"></i>
     </span>
   </div>
- 
-  
-
-
-
-
-
 
 </template>
-
- 
-
-   
-
- 
-
   <script>
 
   export default {
