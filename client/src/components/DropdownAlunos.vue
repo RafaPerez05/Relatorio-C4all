@@ -1,23 +1,29 @@
 <template>
-    <div class="select is-fullwidth">
-        <select v-model="selectedStudent" @change="handleSelectChange">
-        <option value="">Selecione um aluno</option>
-        <option v-for="student in students" :key="student" :value="student">{{ student }}</option>
-      </select>
+  <div>
+    <div>
+      <label v-for="student in students" :key="student">
+        <input type="checkbox" v-model="selectedStudents" :value="student" @change="handleCheckboxChange" />
+        {{ student }}
+      </label>
     </div>
-  </template>
-  
-  <script>
+  </div>
+</template>
 
-  export default {
-    data() {
-      
-      return {
-        selectedStudent: "",
-      };
+<script>
+export default {
+  data() {
+    return {
+      selectedStudents: [], // Use um array para armazenar os alunos selecionados
+    };
+  },
+  methods: {
+    handleCheckboxChange() {
+      // Emita um evento personalizado para informar a seleção ao componente pai
+      this.$emit('selected', this.selectedStudents);
     },
-    methods: {
-
-    },
-  };
-  </script>
+  },
+  props: {
+    students: Array, // Receba a lista de alunos como propriedade do pai
+  },
+};
+</script>

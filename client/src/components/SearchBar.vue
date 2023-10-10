@@ -12,6 +12,7 @@
 
 <script>
 export default {
+  emits: ['search'],
   data() {
     return {
       searchTerm: ''
@@ -19,7 +20,7 @@ export default {
   },
   methods: {
     handleInput() {
-      this.$emit('search', this.searchTerm); 
+      this.$emit('search', this.searchTerm);
     }
   }
 };

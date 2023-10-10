@@ -1,11 +1,11 @@
 <template>
   <div id="Post">
     <header class="hero is-white is-fixed-top">
-    <div class="hero-body">
-      <div class="columns is-vcentered">
-        <div class="column is-half">
-          <DropdownAlunos />
-        </div>
+      <div class="hero-body">
+        <div class="columns is-vcentered">
+          <div class="column is-half">
+            <DropdownAlunos :students="students" @selected="updateSelectedStudents" />
+          </div>
         <div class="column is-half"> <!-- Mesma largura aqui -->
           <div class="field has-addons">
             <search-bar @search="updateSearchTerm" />
@@ -103,6 +103,8 @@ export default {
       posts: [],
       error: '',
       searchTerm: '',
+      students: [], // Adicione uma lista de alunos aqui
+      selectedStudents: [], // Adicione uma propriedade para acompanhar os alunos selecionados
     };
   },
   async created() {
@@ -115,10 +117,11 @@ export default {
 
   computed: {
     filteredAndCustomPosts() {
-      return this.posts.filter(post => this.shouldIncludePost(post));
+      return this.posts.filter(post => post.log_acao_codigo !== 'NAO_ALTERADO');
     }
   },
   methods: {
+  
   //BIBLIOTECA AQUI
   getMensagemByCodigo(codigo, post) {
     const partes = codigo.split('.');
@@ -136,16 +139,15 @@ export default {
   }
   return 'Mensagem não encontrada';
   },
+  updateSelectedStudents(selectedStudents) {
+      // Atualize a lista de alunos selecionados
+      this.selectedStudents = selectedStudents;
+    },
   //BARRA DE PESQUISA DAQUI
   shouldIncludePost(post) {
-
-    if (this.searchTerm) {
-      return this.isMatchingSearchTerm(post);
-    }
-    else{
-      return true;
-    }
-  },
+      // Verifique se o post foi alterado
+      return post.log_acao_codigo !== 'NAO_ALTERADO';
+    },
   isMatchingSearchTerm(post) {
     const lowerCaseSearch = this.searchTerm.toLowerCase();
     const formattedSearch = this.formatSearchDate(lowerCaseSearch); // Formatar a data inserida
@@ -207,9 +209,13 @@ export default {
   handleInput()  {
       this.posts = this.posts.filter(post => this.shouldIncludePost(post));
     },
-  updateSearchTerm(newSearchTerm) {
-      this.searchTerm = newSearchTerm;
+    updateSearchTerm(newSearchTerm) {
+      // Atualize a lista de posts apenas se a pesquisa não for vazia
+      if (newSearchTerm) {
+        this.posts = this.posts.filter(post => post.log_usuario_nome.toLowerCase().includes(newSearchTerm.toLowerCase()));
+      }
     },
+    
   },
 };
 
