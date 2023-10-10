@@ -103,7 +103,6 @@ export default {
       posts: [],
       error: '',
       searchTerm: '',
-      selectedStudent: '',
     };
   },
   async created() {
@@ -120,7 +119,6 @@ export default {
     }
   },
   methods: {
-  
   //BIBLIOTECA AQUI
   getMensagemByCodigo(codigo, post) {
     const partes = codigo.split('.');
@@ -137,8 +135,7 @@ export default {
     return mensagem;
   }
   return 'Mensagem não encontrada';
-},
-
+  },
   //BARRA DE PESQUISA DAQUI
   shouldIncludePost(post) {
 
@@ -207,15 +204,16 @@ export default {
     // Formatar como "hh:mm:ss"
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   },
+  handleInput()  {
+      this.posts = this.posts.filter(post => this.shouldIncludePost(post));
+    },
   updateSearchTerm(newSearchTerm) {
-    this.searchTerm = newSearchTerm;
-  }
-}
-
+      this.searchTerm = newSearchTerm;
+    },
+  },
 };
 
 </script>
 
 <style scoped>
-
 </style>
