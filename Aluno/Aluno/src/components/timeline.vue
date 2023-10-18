@@ -8,7 +8,7 @@
           <li class="timeline-item">
             <div class="timeline-content">
               <div class="timeline-header">
-                <h3 class="has-background-link has-text-white ">Hoje</h3>
+                <h3 class="has-background-link has-text-white">Hoje</h3>
               </div>
             </div>
           </li>
@@ -32,7 +32,7 @@
             <div class="timeline-content">
               <div class="timeline-header">
                 <span class="timeline-date">08:00</span>
-                <p class="is-size-6">Conectou-se na plataforma </p><p class="button is-success is-small">aplicativo</p>
+                <p class="is-size-6">Conectou-se na plataforma </p><p class="button is-primary custom-button">Aplicativo</p>
               </div>
             </div>
           </li>
@@ -47,7 +47,7 @@
             <div class="timeline-content">
               <div class="timeline-header">
                 <span class="timeline-date">11:00</span>
-                <p class="is-size-6">Desconectou-se da plataforma</p><p class="button is-success is-small"> aplicativo</p>
+                <p class="is-size-6">Desconectou-se da plataforma</p><p class="button is-primary custom-button"> Aplicativo</p>
               </div>
             </div>
           </li>
@@ -163,4 +163,12 @@ export default {
   border-radius: 0.25rem;
   color: #000;
 }
+
+.custom-button {
+  height: 1.2rem;
+  width: 15%;
+  font-size: 0.9rem;
+  left: 0.40rem;
+}
+
 </style>
