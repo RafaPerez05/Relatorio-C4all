@@ -4,7 +4,9 @@
       <b-quickview-trigger>
         <select v-model="selectedStudent" @change="handleSelectChange">
           <!-- Use as opções formatadas com ID e nome -->
+          
           <option v-for="student in formattedStudents" :key="student._id" :value="student._id">{{ student.text }}</option>
+          <option v-for="student in filteredAndCustomstudents" :key="student._id">{{ student.log_usuario_nome }}</option>
         </select>
       </b-quickview-trigger>
     </b-quickview>
@@ -37,7 +39,7 @@ export default {
     formattedStudents() {
       return this.students.map((student) => ({
         _id: student._id,
-        text: `ID: ${student._id} - Nome: ${student.name}`,
+        text: ` Nome: ${ student.log_usuario_nome }`,
       }));
     },
   },
