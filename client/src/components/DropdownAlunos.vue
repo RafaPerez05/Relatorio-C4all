@@ -8,6 +8,7 @@
         </select>
       </b-quickview-trigger>
     </b-quickview>
+
   </div>
 </template>
 
@@ -52,3 +53,4 @@ export default {
   },
 };
 </script>
+
