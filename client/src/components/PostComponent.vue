@@ -9,7 +9,6 @@
         <div class="column is-half"> <!-- Mesma largura aqui -->
           <div class="field has-addons">
             <search-bar @search="updateSearchTerm" />
-            
           </div>
         </div>
       </div>
@@ -103,7 +102,6 @@ export default {
       posts: [],
       error: '',
       searchTerm: '',
-      selectedStudent: '',
     };
   },
   async created() {
