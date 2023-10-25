@@ -4,7 +4,9 @@
       <b-quickview-trigger>
         <select v-model="selectedStudent" @change="handleSelectChange">
           <!-- Use as opções formatadas com ID e nome -->
+          
           <option v-for="student in formattedStudents" :key="student._id" :value="student._id">{{ student.text }}</option>
+          <option v-for="student in filteredAndCustomstudents" :key="student._id">{{ student.log_usuario_nome }}</option>
         </select>
       </b-quickview-trigger>
     </b-quickview>
@@ -33,17 +35,27 @@ export default {
       });
   },
   computed: {
-    // Crie uma computed property para formatar as opções do Dropdown
     formattedStudents() {
-      return this.students.map((student) => ({
+  const uniqueStudentNames = new Set();
+  return this.students.reduce((formatted, student) => {
+    if (!uniqueStudentNames.has(student.log_usuario_nome)) {
+      uniqueStudentNames.add(student.log_usuario_nome);
+      formatted.push({
         _id: student._id,
-        text: `ID: ${student._id} - Nome: ${student.name}`,
-      }));
-    },
+        text: student.log_usuario_nome,
+      });
+    }
+    return formatted;
+  }, []);
+},
+    // Crie uma computed property para formatar as opções do Dropdown
   },
   methods: {
     handleSelectChange() {
-      console.log('Aluno selecionado:', this.selectedStudent);
+      const selectedStudent = this.students.find(student => student._id === this.selectedStudent);
+  if (selectedStudent) {
+    console.log('Aluno selecionado:', selectedStudent);
+  }
     },
     toggleDropdown() {
       // Esta função é chamada quando o botão do dropdown é clicado
