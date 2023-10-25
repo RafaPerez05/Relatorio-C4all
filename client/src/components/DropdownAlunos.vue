@@ -35,17 +35,27 @@ export default {
       });
   },
   computed: {
-    // Crie uma computed property para formatar as opções do Dropdown
     formattedStudents() {
-      return this.students.map((student) => ({
+  const uniqueStudentNames = new Set();
+  return this.students.reduce((formatted, student) => {
+    if (!uniqueStudentNames.has(student.log_usuario_nome)) {
+      uniqueStudentNames.add(student.log_usuario_nome);
+      formatted.push({
         _id: student._id,
-        text: ` Nome: ${ student.log_usuario_nome }`,
-      }));
-    },
+        text: student.log_usuario_nome,
+      });
+    }
+    return formatted;
+  }, []);
+},
+    // Crie uma computed property para formatar as opções do Dropdown
   },
   methods: {
     handleSelectChange() {
-      console.log('Aluno selecionado:', this.selectedStudent);
+      const selectedStudent = this.students.find(student => student._id === this.selectedStudent);
+  if (selectedStudent) {
+    console.log('Aluno selecionado:', selectedStudent);
+  }
     },
     toggleDropdown() {
       // Esta função é chamada quando o botão do dropdown é clicado
