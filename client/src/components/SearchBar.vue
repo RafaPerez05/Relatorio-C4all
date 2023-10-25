@@ -12,17 +12,27 @@
 
 <script>
 export default {
+  emits: ['search'],
   data() {
     return {
       searchTerm: ''
     };
   },
-  watch: {
-    searchTerm(newSearchTerm) {
-      this.$emit('search', newSearchTerm);
+  methods: {
+    handleInput() {
+      this.$emit('search', this.searchTerm);
     }
+  },
+  isMatchingSearchTerm(post) {
+const lowerCaseSearch = this.searchTerm.toLowerCase();
+
+ return (
+      (post.log_usuario_nome && post.log_usuario_nome.toLowerCase().includes(lowerCaseSearch))
+);
   }
 };
+
 </script>
 
 <style scoped></style>
+ 

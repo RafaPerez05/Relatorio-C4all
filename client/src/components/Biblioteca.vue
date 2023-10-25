@@ -40,7 +40,7 @@ conta_acesso : {
     google : 'Conectou-se na plataforma pela conta google %conta-google%.',
     apple : 'Conectou-se na plataforma pela conta apple %conta-apple%.',
 },
-conta_cadastro : {
+conta_cadastro :  {
     padrao : 'Criou uma conta na plataforma com cadastro padrão.',
     microsoft : 'Criou uma conta na plataforma com o login microsoft %conta-microsoft%.',
     google : 'Criou uma conta na plataforma com o login google %conta-google%.',
