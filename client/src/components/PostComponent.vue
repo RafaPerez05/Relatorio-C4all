@@ -16,8 +16,8 @@
   </header>
   <!-- TABELA DE DADOS -->
   <table class="table is-fullwidth">
-      <thead>
-        <tr>
+      <thead class="table is-primary custom-table">
+        <tr class="tr is-primary custom-tr">
           <th>Dia</th>
           <th>Hora</th>
           <th>Usuário</th>
@@ -216,4 +216,12 @@ export default {
 
 <style scoped>
 
+.custom-table{
+  background-color: rgb(227, 231, 234);
+}
+
+.table thead td, .table thead th {
+    border-width: 0 0 2px;
+    color: #4827ab;
+}
 </style>
