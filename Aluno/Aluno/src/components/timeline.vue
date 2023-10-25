@@ -8,7 +8,7 @@
           <li class="timeline-item">
             <div class="timeline-content">
               <div class="timeline-header">
-                <h3 class="has-background-link has-text-white">Hoje</h3>
+                  <h3 class="has-background-link has-text-white">Hoje</h3>
               </div>
             </div>
           </li>
@@ -117,10 +117,12 @@ export default {
 <style scoped>
 .timeline-header h3 {
   border: 1px solid #ccc;
-  padding: 0.1rem;
+  padding: 0rem 0.4rem;
   border-radius: 0.25rem;
-  width: 10em;
+  width: auto;
+  font-size: 1.1rem;
   text-align: center;
+  font-weight: bold;
 
 }
 
@@ -162,6 +164,7 @@ export default {
   padding: 0.25rem;
   border-radius: 0.25rem;
   color: #000;
+  font-weight: bold;
 }
 
 .custom-button {
