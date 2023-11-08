@@ -1,17 +1,33 @@
 <template>
   <div id="Post">
-    <SearchBar @search="updateSearchTerm" />
+    <div class="container mb-4 mt-4">
+      <SearchBar @search="updateSearchTerm" />
+    </div>
     <div class="container">
       <div class="row">
         <div class="col-md-6">
           <ul v-for="(posts, date) in groupedPosts" :key="date" class="timeline">
-            <h3 class="has-background-link has-text-white">{{ date }}</h3>
+            <span class="tag has-background-info mb-4">
+              <label class="label has-text-white">
+                {{ date }}
+              </label>
+            </span>
             <li v-for="post in posts" :key="post._id" class="timeline-item">
-              <div class="timeline-content">
+              <div class="timeline-content mb-4">
                 <div class="timeline-header">
-                  <span class="timeline-date">{{ formatTime(post.log_acao_data.date) }}</span>
-                  <p class="is-size-6">{{ getMensagemByCodigo(post.log_acao_codigo, post) }}</p>
-                  <p class="button is-primary custom-button"> Aplicativo</p>
+                    <span class="tag has-background-grey-lighter">
+                    <label class="label has-text-black is-size-6">
+                      {{ formatTime(post.log_acao_data.date) }}
+                    </label>
+                  </span>
+                  <label class="has-text-grey is-size-5 m-1">
+                    {{ getMensagemByCodigo(post.log_acao_codigo, post) }}
+                  </label>
+                    <span class="tag has-background-success">
+                      <label class="label has-text-white is-size-7">
+                        Aplicativo
+                      </label>
+                    </span>
                 </div>
               </div>
             </li>
@@ -210,68 +226,4 @@ export default {
 
 </script>
 
-<style scoped>
-.is-size-6 {
-  margin-left: 1rem;
-}
-
-.timeline-header h3 {
-  border: 1px solid #ccc;
-  padding: 0rem 0.4rem;
-  border-radius: 0.25rem;
-  width: auto;
-  font-size: 1.1rem;
-  text-align: center;
-  font-weight: bold;
-
-}
-
-
-.timeline-header h3.is-primary {
-  color: #fff;
-  background-color: rgb(132, 132, 255);
-}
-
-
-
-.container {
-  width: 50%;
-  margin: 0 auto;
-  margin-left: 0rem;
-}
-
-.timeline {
-  list-style-type: none;
-  padding: 2rem;
-}
-
-.timeline-item {
-  margin-bottom: 0rem;
-}
-
-.timeline-content {
-  padding: 1rem;
-  background-color: #fff;
-}
-
-.timeline-header {
-  display: flex;
-  align-items: center;
-}
-
-.timeline-date {
-  background-color: rgba(199, 191, 191, 0.267);
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  color: #000;
-  font-weight: bold;
-}
-
-.custom-button {
-  height: 1.2rem;
-  width: auto;
-  font-size: 0.9rem;
-  left: 0.40rem;
-  padding: 0rem 0.3rem;
-}
-</style>
+<style scoped></style>

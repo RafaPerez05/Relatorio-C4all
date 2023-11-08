@@ -5,9 +5,7 @@
       <font-awesome-icon icon="search" />
     </span>
   </div>
-  <div class="control">
-    <a class="button is-success" @click="handleInput">Filtrar</a>
-  </div>
+
 </template>
 
 <script>
