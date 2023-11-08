@@ -7,6 +7,7 @@ class PostService {
       return response.data;
     } catch (error) {
       throw new Error('TEM PARADA ERRADA');
+
     }
   }
 }
