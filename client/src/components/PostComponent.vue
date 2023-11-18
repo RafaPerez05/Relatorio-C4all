@@ -4,7 +4,7 @@
       <div class="hero-body">
         <div class="columns is-vcentered">
           <div class="column is-half">
-            <DropdownAlunos :students="students" @student-selected="handleStudentSelected" />
+            <DropdownAlunos :students="students" @students-selected="handleStudentsSelected" />
           </div>
           <div class="column is-half">
             <div class="field has-addons">
@@ -99,7 +99,7 @@ export default {
   data() {
     return {
       students: [], // Lista de alunos
-      selectedStudent: '',
+      selectedStudents: [],
       posts: [],
       error: '',
       searchTerm: '',
@@ -137,11 +137,14 @@ export default {
   return 'Mensagem não encontrada';
 },
  
-  //BARRA DE PESQUISA DAQUI
+ 
   shouldIncludePost(post) {
-// Adicione uma condição para verificar se o aluno selecionado corresponde ao aluno no post
-if (this.selectedStudent) {
-        return post.log_usuario_nome === this.selectedStudent && this.isMatchingSearchTerm(post);
+      // Adicione uma condição para verificar se o aluno da postagem está na matriz de alunos selecionados
+      if (this.selectedStudents.length > 0) {
+        return (
+          this.selectedStudents.includes(post.log_usuario_nome) &&
+          this.isMatchingSearchTerm(post)
+        );
       } else {
         return this.isMatchingSearchTerm(post);
       }
@@ -196,10 +199,11 @@ if (this.selectedStudent) {
       return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
     }
   },
-  handleStudentSelected(student) {
-      // Atualizar o aluno selecionado e filtrar os posts
-      this.selectedStudent = student;
+  handleStudentsSelected(students) {
+      // Atualize os alunos selecionados e filtre as postagens
+      this.selectedStudents = students;
     },
+ 
   formatTime(dateTime) {
     const dateObj = new Date(dateTime);
     const hours = dateObj.getHours();
@@ -228,4 +232,5 @@ if (this.selectedStudent) {
     border-width: 0 0 2px;
     color: #4827ab;
 }
+ 
 </style>

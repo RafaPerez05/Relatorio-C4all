@@ -10,15 +10,15 @@ router.get('/', async (req, res) => {
   const posts = await loadPostsCollection();
 
   
-  // if(posts != false){
+   if(posts != false){
     const result = await posts.find({}).toArray();
     console.log("MULTIMEDIA DATA!"); 
     res.json(result);
     
-  // }else{
-  //   console.log("LOCALDATA!");
-  //   res.json(localdata);    
-  // }
+  }else{
+     console.log("LOCALDATA!");
+    res.json(localdata);    
+   }
 
 
 
