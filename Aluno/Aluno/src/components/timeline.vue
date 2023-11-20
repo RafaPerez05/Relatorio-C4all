@@ -1,6 +1,8 @@
 <template>
   <div id="Post">
     <div class="container mb-4 mt-4">
+      <h1 class="has-text-grey is-size-5 m-1">{{ filteredUserName }}</h1>
+
       <SearchBar @search="updateSearchTerm" />
     </div>
     <div class="container">
@@ -12,10 +14,10 @@
                 {{ date }}
               </label>
             </span>
-            <li v-for="post in posts" :key="post._id" class="timeline-item">
+            <li v-for="post in filteredAndCustomPosts" :key="post._id" class="timeline-item">
               <div class="timeline-content mb-4">
                 <div class="timeline-header">
-                    <span class="tag has-background-grey-lighter">
+                  <span class="tag has-background-grey-lighter">
                     <label class="label has-text-black is-size-6">
                       {{ formatTime(post.log_acao_data.date) }}
                     </label>
@@ -23,11 +25,11 @@
                   <label class="has-text-grey is-size-5 m-1">
                     {{ getMensagemByCodigo(post.log_acao_codigo, post) }}
                   </label>
-                    <span class="tag has-background-success">
-                      <label class="label has-text-white is-size-7">
-                        Aplicativo
-                      </label>
-                    </span>
+                  <span class="tag has-background-success">
+                    <label class="label has-text-white is-size-7">
+                      Aplicativo
+                    </label>
+                  </span>
                 </div>
               </div>
             </li>
@@ -108,7 +110,11 @@ export default {
 
   computed: {
     filteredAndCustomPosts() {
-      return this.posts.filter(post => this.isMatchingSearchTerm(post));
+      const filteredPosts = this.posts.filter(post =>
+        post.log_usuario_nome.toLowerCase() === 'luiz molina' && this.shouldIncludePost(post)
+      );
+      console.log('Filtered Posts:', filteredPosts);
+      return filteredPosts;
     },
     groupedPosts() {
       const grouped = {};
@@ -144,29 +150,25 @@ export default {
 
     //BARRA DE PESQUISA DAQUI
     shouldIncludePost(post) {
-      if (this.searchTerm) {
-        return (
-          this.isMatchingSearchTerm(post) &&
-          post.log_usuario_nome && post.log_usuario_nome.toLowerCase() === 'luiz molina'
-        );
-      } else {
-        return post.log_usuario_nome && post.log_usuario_nome.toLowerCase() === 'luiz molina';
-      }
+      return this.isMatchingSearchTerm(post);
     },
+
     isMatchingSearchTerm(post) {
       const lowerCaseSearch = this.searchTerm.toLowerCase();
+
+      // Se a barra de pesquisa estiver vazia, não filtre nada
       if (!lowerCaseSearch) {
-        return true; // Se a barra de pesquisa estiver vazia, não filtre nada
+        console.log('Search term is empty, returning true');
+        return true;
       }
 
-      const formattedSearch = this.formatSearchDate(lowerCaseSearch); // Formate a data de pesquisa
+      const formattedSearch = this.formatSearchDate(lowerCaseSearch);
       const isMatchingDate = this.formatSpecialDate(post.log_acao_data.date).includes(formattedSearch);
-
-      // Verifique se o termo de pesquisa corresponde a uma ação na biblioteca
       const isMatchingAction = this.getMensagemByCodigo(post.log_acao_codigo, post).toLowerCase().includes(lowerCaseSearch);
 
-      // Retorna verdadeiro se houver correspondência em data ou ação
-      return isMatchingDate || isMatchingAction;
+      const result = isMatchingDate || isMatchingAction;
+      console.log('Is Matching Search Term?', result);
+      return result;
     },
     formatSearchDate(dateString) {
       // Remova espaços em branco, traços e barras da string de data
@@ -217,6 +219,7 @@ export default {
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     },
     updateSearchTerm(newSearchTerm) {
+      console.log('Updated search term:', newSearchTerm);
       this.searchTerm = newSearchTerm;
     }
   }
