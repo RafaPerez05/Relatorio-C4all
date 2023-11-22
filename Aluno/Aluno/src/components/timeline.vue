@@ -63,7 +63,7 @@ const mensagemLibrary = {
   },
   conta_acesso: {
     sair: 'Desconectou-se da plataforma.',
-    padrao: 'Conectou-se na plataforma com usuário e senha.',
+    padrao: 'Conectou-se na plataforma com usuário e senha. {dispositivo_tipo} ',
     memorizado: 'Conectou-se na plataforma com login memorizado.',
     microsoft: 'Conectou-se na plataforma pela conta microsoft {conta-microsoft}.',
     google: 'Conectou-se na plataforma pela conta google {conta_google}.',
@@ -142,6 +142,7 @@ export default {
         mensagem = mensagem.replace('{conta_google}', post.log_acao_extra.conta_google);
         mensagem = mensagem.replace('{conta-microsoft}', post.log_acao_extra.conta_microsoft);
         mensagem = mensagem.replace('{conta-apple}', post.log_acao_extra.conta_apple);
+        mensagem = mensagem.replace('{dispositivo_tipo}',post.log_dispositivo_tipo);
 
         return mensagem;
       }
