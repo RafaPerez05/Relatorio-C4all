@@ -30,8 +30,3 @@ Para executar o projeto, você precisa ter instalado o Node.js e o MongoDB em su
 ## Como contribuir para o projeto
 
 Se você quiser contribuir para o projeto, você pode fazer um fork do repositório e enviar um pull request com as suas alterações. Você também pode abrir uma issue para reportar bugs ou sugerir melhorias.
-
-## Licença
-
-Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE] para mais detalhes.
-```
