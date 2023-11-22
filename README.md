@@ -22,8 +22,8 @@ Para executar o projeto, você precisa ter instalado o Node.js e o MongoDB em su
 
 1. Clone o repositório para a sua máquina local usando o comando `git clone https://github.com/seu-usuario/seu-projeto.git`.
 2. Navegue até a pasta do projeto usando o comando `cd seu-projeto`.
-3. Instale as dependências do projeto usando o comando `npm install`.
-4. Inicie o servidor da API usando o comando `npm run api`.
+3. Instale as dependências do projeto usando os comandos `npm install express mongodb node axios body-parser cors`.
+4. Inicie o servidor da API usando o comando `npm run dev`.
 5. Inicie o servidor do front-end usando o comando `npm run serve`.
 6. Acesse o projeto no seu navegador através do endereço `http://localhost:8080`.
 
