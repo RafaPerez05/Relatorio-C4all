@@ -1,8 +1,22 @@
 <template>
   <div id="Post">
     <div class="container mb-4 mt-4">
-      <h1 class="has-text-grey is-size-5 m-1">{{ filteredUserName }}</h1>
-
+      <div class="box">
+        <article class="media">
+          <div class="media-left">
+            <span class="icon fas fa-2x mt-3">
+              <font-awesome-icon icon="user" />
+            </span>
+          </div>
+          <div class="media-content">
+            <div class="content">
+              <p>
+              <h1 class="has-text-grey is-size-5 m-1 mb-3 mt-3 ml-2" id="user"></h1>
+              </p>
+            </div>
+          </div>
+        </article>
+      </div>
       <SearchBar @search="updateSearchTerm" />
     </div>
     <div class="container">
@@ -25,11 +39,7 @@
                   <label class="has-text-grey is-size-5 m-1">
                     {{ getMensagemByCodigo(post.log_acao_codigo, post) }}
                   </label>
-                  <span class="tag has-background-success">
-                    <label class="label has-text-white is-size-7">
-                      Aplicativo
-                    </label>
-                  </span>
+
                 </div>
               </div>
             </li>
@@ -110,12 +120,16 @@ export default {
 
   computed: {
     filteredAndCustomPosts() {
+      const filteredUserName = "Luiz Molina";
       const filteredPosts = this.posts.filter(post =>
-        post.log_usuario_nome.toLowerCase() === 'luiz molina' && this.shouldIncludePost(post)
+        post.log_usuario_nome.toLowerCase().includes(filteredUserName.toLowerCase()) && this.shouldIncludePost(post)
       );
-      console.log('Filtered Posts:', filteredPosts);
+
+      const userCnn = document.getElementById("user");
+      userCnn.textContent = filteredUserName;
       return filteredPosts;
     },
+
     groupedPosts() {
       const grouped = {};
       this.posts.forEach(post => {
@@ -142,7 +156,7 @@ export default {
         mensagem = mensagem.replace('{conta_google}', post.log_acao_extra.conta_google);
         mensagem = mensagem.replace('{conta-microsoft}', post.log_acao_extra.conta_microsoft);
         mensagem = mensagem.replace('{conta-apple}', post.log_acao_extra.conta_apple);
-        mensagem = mensagem.replace('{dispositivo_tipo}',post.log_dispositivo_tipo);
+        mensagem = mensagem.replace('{dispositivo_tipo}', post.log_dispositivo_tipo);
 
         return mensagem;
       }
@@ -171,27 +185,27 @@ export default {
       console.log('Is Matching Search Term?', result);
       return result;
     },
-    formatSearchDate(dateString) {
-      // Remova espaços em branco, traços e barras da string de data
-      const cleanedString = dateString.replace(/[/\s-]/g, '');
+formatSearchDate(dateString) {
+  // Remova espaços em branco, traços e barras da string de data
+  const cleanedString = dateString.replace(/[/\s-]/g, '');
 
-      // Certifique-se de que a string de data tenha 8 caracteres (ddmmyyyy)
-      if (cleanedString.length !== 8) {
-        return dateString;
-      }
+  // Certifique-se de que a string de data tenha 8 caracteres (ddmmyyyy)
+  if (cleanedString.length !== 8) {
+    return dateString;
+  }
 
-      const day = cleanedString.substr(0, 2);
-      const month = cleanedString.substr(2, 2);
-      const year = cleanedString.substr(4, 4);
+  const day = cleanedString.substr(0, 2);
+  const month = cleanedString.substr(2, 2);
+  const year = cleanedString.substr(4, 4);
 
-      // Certifique-se de que os valores são numéricos
-      if (isNaN(day) || isNaN(month) || isNaN(year)) {
-        return dateString;
-      }
+  // Certifique-se de que os valores são numéricos
+  if (isNaN(day) || isNaN(month) || isNaN(year)) {
+    return dateString;
+  }
 
-      // Formatar como "dd/mm/yyyy"
-      return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
-    },
+  // Formatar como "yyyy-mm-dd" para garantir a comparação correta
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+},
     formatSpecialDate(dateTime) {
       const dateObj = new Date(dateTime);
       const today = new Date();
@@ -225,9 +239,6 @@ export default {
     }
   }
 };
-
-
-
 </script>
 
 <style scoped></style>
