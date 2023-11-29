@@ -36,10 +36,8 @@
                       {{ formatTime(post.log_acao_data.date) }}
                     </label>
                   </span>
-                  <label class="has-text-grey is-size-5 m-1">
-                    {{ getMensagemByCodigo(post.log_acao_codigo, post) }}
-                  </label>
-
+                  <label class="has-text-grey is-size-5 m-1"
+                    v-html="getMensagemByCodigo(post.log_acao_codigo, post)"></label>
                 </div>
               </div>
             </li>
@@ -156,7 +154,17 @@ export default {
         mensagem = mensagem.replace('{conta_google}', post.log_acao_extra.conta_google);
         mensagem = mensagem.replace('{conta-microsoft}', post.log_acao_extra.conta_microsoft);
         mensagem = mensagem.replace('{conta-apple}', post.log_acao_extra.conta_apple);
-        mensagem = mensagem.replace('{dispositivo_tipo}', post.log_dispositivo_tipo);
+
+        const dispositivoTipo = post.log_dispositivo_tipo;
+        if (dispositivoTipo) {
+          const tagHtml = `<span class="tag has-background-success">
+                         <label class="label has-text-white is-size-7">${dispositivoTipo}</label>
+                       </span>`;
+          mensagem = mensagem.replace('{dispositivo_tipo}', tagHtml);
+        } else {
+          // Se não houver dispositivo_tipo, remova a tag
+          mensagem = mensagem.replace('{dispositivo_tipo}', '');
+        }
 
         return mensagem;
       }
@@ -185,27 +193,27 @@ export default {
       console.log('Is Matching Search Term?', result);
       return result;
     },
-formatSearchDate(dateString) {
-  // Remova espaços em branco, traços e barras da string de data
-  const cleanedString = dateString.replace(/[/\s-]/g, '');
+    formatSearchDate(dateString) {
+      // Remova espaços em branco, traços e barras da string de data
+      const cleanedString = dateString.replace(/[/\s-]/g, '');
 
-  // Certifique-se de que a string de data tenha 8 caracteres (ddmmyyyy)
-  if (cleanedString.length !== 8) {
-    return dateString;
-  }
+      // Certifique-se de que a string de data tenha 8 caracteres (ddmmyyyy)
+      if (cleanedString.length !== 8) {
+        return dateString;
+      }
 
-  const day = cleanedString.substr(0, 2);
-  const month = cleanedString.substr(2, 2);
-  const year = cleanedString.substr(4, 4);
+      const day = cleanedString.substr(0, 2);
+      const month = cleanedString.substr(2, 2);
+      const year = cleanedString.substr(4, 4);
 
-  // Certifique-se de que os valores são numéricos
-  if (isNaN(day) || isNaN(month) || isNaN(year)) {
-    return dateString;
-  }
+      // Certifique-se de que os valores são numéricos
+      if (isNaN(day) || isNaN(month) || isNaN(year)) {
+        return dateString;
+      }
 
-  // Formatar como "yyyy-mm-dd" para garantir a comparação correta
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-},
+      // Formatar como "yyyy-mm-dd" para garantir a comparação correta
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    },
     formatSpecialDate(dateTime) {
       const dateObj = new Date(dateTime);
       const today = new Date();
