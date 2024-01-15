@@ -1,6 +1,6 @@
 # Relatório para C4all
 
-Este projeto é um relatório para a plataforma deles utilizando as seguintes tecnologias:
+Este projeto é um relatório para a plataforma c4all utilizando as seguintes tecnologias:
 
 - Node.js para API de conexão com MongoDB
 - Vue.js como framework front-end
